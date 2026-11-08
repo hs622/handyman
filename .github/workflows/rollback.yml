@@ -1,0 +1,47 @@
+# Manual rollback: optionally revert the Vercel production deployment, then roll back N DB migrations.
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [preview, production]
+        required: true
+      steps:
+        description: Number of migrations to roll back (0 = app only)
+        type: number
+        default: 1
+        required: true
+      app_rollback:
+        description: Also roll back the Vercel production deployment to the previous one
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ inputs.environment == 'production' && 'production' || 'preview-db' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      # App first: old code tolerates the newer schema better than new code tolerates the older one.
+      - name: Roll back Vercel production deployment
+        if: ${{ inputs.app_rollback && inputs.environment == 'production' }}
+        run: |
+          npm install --global vercel@latest
+          vercel rollback --yes --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Roll back ${{ inputs.steps }} migration(s)
+        run: pnpm db:rollback --steps ${{ inputs.steps }}
