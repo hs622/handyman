@@ -10,7 +10,7 @@ import { fill } from "@/i18n/fill";
 import { alternates } from "@/i18n/metadata";
 import { getDictionary } from "@/i18n/server";
 import { taxLabel } from "@/lib/format";
-import { getActiveServices, getCategories } from "@/lib/queries";
+import { getActiveServices, getCategories } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {

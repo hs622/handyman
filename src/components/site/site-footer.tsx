@@ -11,9 +11,7 @@ export async function SiteFooter() {
   const links = [
     { href: localePath(lang), label: dict.nav.home },
     { href: localePath(lang, "/services"), label: dict.nav.services },
-    { href: localePath(lang, "/track"), label: dict.nav.track },
     { href: localePath(lang, "/reviews"), label: dict.nav.reviews },
-    { href: localePath(lang, "/book"), label: dict.common.bookRepair },
   ];
   return (
     <footer className="mt-16 border-t bg-card">

@@ -21,14 +21,6 @@ function detectLocale(request: NextRequest): Locale {
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  // Admin (English-only). Optimistic check — every admin page/action still calls requireAdmin().
-  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
-    if (pathname !== "/admin/login" && !request.cookies.has("admin_session")) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
-    }
-    return NextResponse.next();
-  }
-
   // Already localized: /en/..., /fr/...
   const first = pathname.split("/")[1];
   if (first && hasLocale(first)) return NextResponse.next();

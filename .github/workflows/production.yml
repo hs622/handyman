@@ -1,12 +1,11 @@
-# Production: every push to main is linted, migrated + seeded against the
-# production Supabase project, and deployed to the Vercel production domain.
+# Production: every push to main is linted and deployed to the Vercel production domain.
 name: Production
 
 on:
   push:
     branches: [main]
 
-# One production run at a time; a queued run waits instead of cancelling a migration.
+# One production deploy at a time; a queued run waits for the current one.
 concurrency:
   group: production
   cancel-in-progress: false

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { MessageSquareHeart } from "lucide-react";
 import { ReviewCard } from "@/components/site/review-card";
 import { Stars } from "@/components/site/stars";
-import { localePath, localeTag } from "@/i18n/config";
+import { localeTag } from "@/i18n/config";
 import { fill } from "@/i18n/fill";
 import { alternates } from "@/i18n/metadata";
 import { getDictionary } from "@/i18n/server";
-import { getPublishedReviews, getReviewSummary } from "@/lib/queries";
+import { getPublishedReviews, getReviewSummary } from "@/lib/catalog";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { lang, dict } = await getDictionary();
@@ -54,13 +53,6 @@ export default async function ReviewsPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-6 rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground">
-            {t.hadRepair}{" "}
-            <Link href={localePath(lang, "/track")} className="font-medium text-primary">
-              {t.trackLink}
-            </Link>{" "}
-            {t.toReview}
-          </p>
         </aside>
 
         {reviews.length > 0 ? (

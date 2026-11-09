@@ -43,7 +43,6 @@ export async function SiteHeader() {
   const items: NavItem[] = [
     { href: localePath(lang), label: dict.nav.home, exact: true },
     { href: localePath(lang, "/services"), label: dict.nav.services },
-    { href: localePath(lang, "/track"), label: dict.nav.track },
     { href: localePath(lang, "/reviews"), label: dict.nav.reviews },
   ];
   const search = {
@@ -62,8 +61,8 @@ export async function SiteHeader() {
           <MobileMenu
             items={items}
             title={site.name}
-            bookHref={localePath(lang, "/book")}
-            bookLabel={dict.common.bookRepair}
+            callHref={site.phoneHref}
+            callLabel={`${dict.common.callToBook} · ${site.phone}`}
             openLabel={dict.common.openMenu}
           >
             {/* On phones the language switch lives in the menu to keep the header row narrow. */}
@@ -98,10 +97,10 @@ export async function SiteHeader() {
             asChild
             className="h-10 rounded-full bg-accent px-3 font-semibold text-accent-foreground shadow-sm hover:bg-accent/90 sm:px-4"
           >
-            <Link href={localePath(lang, "/book")}>
-              <Wrench /> <span className="hidden sm:inline">{dict.common.bookRepair}</span>
-              <span className="sm:hidden">{dict.common.book}</span>
-            </Link>
+            <a href={site.phoneHref} aria-label={`${dict.common.callToBook} ${site.phone}`}>
+              <Phone /> <span className="hidden sm:inline">{dict.common.callToBook}</span>
+              <span className="sm:hidden">{dict.common.call}</span>
+            </a>
           </Button>
         </div>
       </div>

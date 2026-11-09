@@ -1,4 +1,3 @@
-import { BadgeCheck } from "lucide-react";
 import { pick, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/fill";
@@ -41,9 +40,6 @@ export function ReviewCard({
             {service} · {review.device} · {formatDate(review.createdAt, lang)}
           </p>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-success/10 px-2 py-1 text-xs font-medium text-success">
-          <BadgeCheck className="size-3.5" /> {dict.review.verified}
-        </span>
       </figcaption>
     </figure>
   );

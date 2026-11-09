@@ -3,7 +3,7 @@ import { ArrowRight, Clock } from "lucide-react";
 import { localePath, pick, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatMoney } from "@/lib/format";
-import type { ServiceWithCategory } from "@/lib/queries";
+import type { ServiceWithCategory } from "@/lib/catalog";
 import { CategoryIcon } from "./category-icon";
 
 export function ServiceCard({
@@ -44,7 +44,7 @@ export function ServiceCard({
         </span>
       </div>
       <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
-        {dict.common.viewAndBook} <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
+        {dict.common.viewDetails} <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
       </span>
     </Link>
   );

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ArrowLeft, BadgeCheck, Clock, ShieldCheck, Stethoscope, Wrench } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Clock, MessageSquare, Phone, ShieldCheck, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/components/site/category-icon";
 import { HelpBox } from "@/components/site/help-box";
@@ -13,7 +13,7 @@ import { fill } from "@/i18n/fill";
 import { alternates } from "@/i18n/metadata";
 import { getDictionary } from "@/i18n/server";
 import { formatMoney, taxLabel } from "@/lib/format";
-import { getActiveServices, getServiceBySlug } from "@/lib/queries";
+import { getActiveServices, getServiceBySlug } from "@/lib/catalog";
 
 export async function generateStaticParams() {
   const services = await getActiveServices();
@@ -114,14 +114,21 @@ async function ServiceDetail({ params }: Pick<PageProps<"/[lang]/services/[slug]
             <p className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground">
               <Clock className="size-4" /> {pick(service, "turnaround", lang)}
             </p>
-            <Button
-              asChild
-              className="mt-5 h-12 w-full rounded-full bg-accent text-base font-semibold text-accent-foreground hover:bg-accent/90"
-            >
-              <Link href={localePath(lang, `/book?service=${service.slug}`)}>
-                <Wrench /> {t.bookThis}
-              </Link>
-            </Button>
+            <div className="mt-5 grid gap-2">
+              <Button
+                asChild
+                className="h-12 w-full rounded-full bg-accent text-base font-semibold text-accent-foreground hover:bg-accent/90"
+              >
+                <a href={site.phoneHref}>
+                  <Phone /> {dict.common.callToBook}
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="h-11 w-full rounded-full">
+                <a href={site.smsHref}>
+                  <MessageSquare /> {dict.common.textUs}
+                </a>
+              </Button>
+            </div>
             <p className="mt-3 text-center text-xs text-muted-foreground">
               {t.finalPrice} {fill(dict.common.pricesNote, { tax })}
             </p>

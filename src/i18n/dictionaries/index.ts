@@ -2,7 +2,7 @@ import type { Locale } from "../config";
 import en, { type Dictionary } from "./en";
 import fr from "./fr";
 
-export type { Dictionary, ErrorKey } from "./en";
+export type { Dictionary } from "./en";
 
 const dictionaries: Record<Locale, Dictionary> = { en, fr };
 

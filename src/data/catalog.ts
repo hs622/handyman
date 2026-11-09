@@ -1,5 +1,7 @@
-import type { BookingStatus, TimeSlot } from "../src/db/schema";
-
+/**
+ * Service catalog (English + French). Edit this file to change what the site shows.
+ * Prices are CAD cents before HST: 14900 = $149.00.
+ */
 export const categories = [
   { slug: "phones", name: "Phones", nameFr: "Téléphones", icon: "smartphone", sort: 1 },
   { slug: "laptops", name: "Laptops", nameFr: "Portables", icon: "laptop", sort: 2 },
@@ -11,7 +13,7 @@ export const categories = [
 
 type CategorySlug = (typeof categories)[number]["slug"];
 
-/** Starting prices in CAD cents, before HST. */
+/** Starting prices in CAD cents, before HST. Set `active: false` to hide a service. */
 export const services: {
   slug: string;
   category: CategorySlug;
@@ -23,6 +25,7 @@ export const services: {
   turnaround: string;
   turnaroundFr: string;
   sort: number;
+  active?: boolean;
 }[] = [
   {
     slug: "phone-screen-replacement",
@@ -230,123 +233,5 @@ export const services: {
     turnaround: "1 day",
     turnaroundFr: "1 jour",
     sort: 1,
-  },
-];
-
-/**
- * Demo data — only seeded when SEED_DEMO=true (preview/local).
- * Phone numbers use the 555-01xx range reserved for fictional use.
- */
-export const demoBookings: {
-  code: string;
-  customerName: string;
-  phone: string;
-  locale: "en" | "fr";
-  service: string;
-  deviceBrand: string;
-  deviceModel: string;
-  issue: string;
-  daysAgo: number;
-  slot: TimeSlot;
-  status: BookingStatus;
-  quoteCents?: number;
-  review?: { rating: number; body: string; displayName: string };
-}[] = [
-  {
-    code: "TR-DEMO2A",
-    customerName: "Emily Chen",
-    phone: "+14165550142",
-    locale: "en",
-    service: "phone-screen-replacement",
-    deviceBrand: "Apple",
-    deviceModel: "iPhone 14",
-    issue: "Screen cracked after a drop, touch still works.",
-    daysAgo: 12,
-    slot: "morning",
-    status: "completed",
-    quoteCents: 22900,
-    review: {
-      rating: 5,
-      body: "Screen replaced in about an hour and it looks original. Clear pricing upfront.",
-      displayName: "Emily C.",
-    },
-  },
-  {
-    code: "TR-DEMO3B",
-    customerName: "Marc-André Tremblay",
-    phone: "+16475550188",
-    locale: "fr",
-    service: "laptop-ssd-upgrade",
-    deviceBrand: "Dell",
-    deviceModel: "XPS 13",
-    issue: "Démarrage très lent, je veux un SSD et Windows réinstallé.",
-    daysAgo: 9,
-    slot: "afternoon",
-    status: "completed",
-    quoteCents: 21900,
-    review: {
-      rating: 5,
-      body: "Mon portable démarre en quelques secondes. Ils ont aussi transféré tous mes fichiers. Je recommande!",
-      displayName: "Marc-André T.",
-    },
-  },
-  {
-    code: "TR-DEMO4C",
-    customerName: "Priya Patel",
-    phone: "+14375550119",
-    locale: "en",
-    service: "console-hdmi-port",
-    deviceBrand: "Sony",
-    deviceModel: "PS5",
-    issue: "No display on TV, HDMI port looks bent.",
-    daysAgo: 7,
-    slot: "evening",
-    status: "completed",
-    quoteCents: 16900,
-    review: {
-      rating: 4,
-      body: "Took two days but the PS5 works perfectly. Kept me updated throughout.",
-      displayName: "Priya P.",
-    },
-  },
-  {
-    code: "TR-DEMO5D",
-    customerName: "Jordan Smith",
-    phone: "+14165550177",
-    locale: "en",
-    service: "phone-battery-replacement",
-    deviceBrand: "Samsung",
-    deviceModel: "Galaxy S23",
-    issue: "Battery drains by noon.",
-    daysAgo: 2,
-    slot: "morning",
-    status: "repairing",
-    quoteCents: 10900,
-  },
-  {
-    code: "TR-DEMO6E",
-    customerName: "Sophie Gagnon",
-    phone: "+16475550133",
-    locale: "fr",
-    service: "laptop-keyboard-replacement",
-    deviceBrand: "HP",
-    deviceModel: "Pavilion 14",
-    issue: "Plusieurs touches ne fonctionnent plus après un dégât de café.",
-    daysAgo: 1,
-    slot: "afternoon",
-    status: "diagnosing",
-  },
-  {
-    code: "TR-DEMO7F",
-    customerName: "Daniel Okafor",
-    phone: "+14165550161",
-    locale: "en",
-    service: "pc-diagnostics",
-    deviceBrand: "Custom",
-    deviceModel: "Ryzen 7 build",
-    issue: "Random restarts while gaming.",
-    daysAgo: 0,
-    slot: "evening",
-    status: "pending",
   },
 ];

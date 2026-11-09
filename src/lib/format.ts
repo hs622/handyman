@@ -13,9 +13,6 @@ export function formatMoney(cents: number, lang: Locale = "en", opts: { compact?
   }).format(cents / 100);
 }
 
-/** Sales tax on an amount in cents, rounded to the cent. */
-export const taxOn = (cents: number) => Math.round(cents * site.tax.rate);
-
 export const formatDate = (d: Date | string, lang: Locale = "en") =>
   new Date(typeof d === "string" && d.length === 10 ? `${d}T12:00:00` : d).toLocaleDateString(
     localeTag[lang],
@@ -26,18 +23,6 @@ export const formatDate = (d: Date | string, lang: Locale = "en") =>
       timeZone: site.timeZone,
     },
   );
-
-export const formatDateTime = (d: Date | string, lang: Locale = "en") =>
-  new Date(d).toLocaleString(localeTag[lang], {
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: site.timeZone,
-  });
-
-/** Today's date (YYYY-MM-DD) in the shop's time zone. */
-export const todayInShopTz = () => new Date().toLocaleDateString("en-CA", { timeZone: site.timeZone });
 
 /** "13% HST" (en) / "13 % TVH" (fr) — the tax label comes from the dictionary. */
 export const taxLabel = (lang: Locale, taxName: string) =>

@@ -1,15 +1,14 @@
-# Preview: every PR to main is linted, migrated + seeded against the shared
-# Supabase preview-db, and deployed to a Vercel preview URL.
+# Preview: every PR to main is linted and deployed to a Vercel preview URL.
 name: Preview
 
 on:
   pull_request:
     branches: [main]
 
-# All PRs share the single preview-db, so runs are serialized (never cancelled mid-migration).
+# One run per PR; a new push cancels the outdated preview build.
 concurrency:
-  group: preview-db
-  cancel-in-progress: false
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

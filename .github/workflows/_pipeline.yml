@@ -1,16 +1,16 @@
 # Reusable CI/CD pipeline, called by preview.yml (PRs) and production.yml (main).
 #
-#   1. Lint        – code quality gate; nothing touches the DB if this fails
-#   2. Migrate     – apply pending Drizzle migrations, then seed
-#   3. Deploy      – build and ship to Vercel (preview or production)
-#   4. Rollback    – only on failure: undo the migrations this run applied
+#   1. Lint    – code quality gate; nothing deploys if this fails
+#   2. Deploy  – build the static site and ship it to Vercel (preview or production)
+#
+# The site has no database or backend: content lives in src/data/*.ts.
 name: Pipeline
 
 on:
   workflow_call:
     inputs:
       environment:
-        description: "GitHub + Vercel environment: preview | production"
+        description: "Vercel environment: preview | production"
         required: true
         type: string
 
@@ -43,45 +43,10 @@ jobs:
       - name: Type-check (next typegen + tsc --noEmit)
         run: pnpm typecheck
 
-      # Guarantees the rollback job can always undo a migration.
-      - name: Verify every migration has a down file
-        run: pnpm db:check-down
-
-  # ── 2. Migrate & seed ──────────────────────────────────────────────────────
-  migrate:
-    name: "2. Migrate & seed database (${{ inputs.environment }})"
-    needs: lint
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    outputs:
-      applied: ${{ steps.migrate.outputs.applied }}
-    env:
-      DIRECT_URL: ${{ secrets.DIRECT_URL }}
-      # Set the GitHub environment variable SEED_DEMO=true on "preview" only,
-      # so preview-db gets demo bookings/reviews and production gets the catalog only.
-      SEED_DEMO: ${{ vars.SEED_DEMO }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js, pnpm and dependencies
-        uses: ./.github/actions/setup
-
-      # Applies pending migrations from drizzle/ and records how many were
-      # applied (output "applied"), so a later failure rolls back exactly those.
-      - name: Apply database migrations (Drizzle)
-        id: migrate
-        run: pnpm db:migrate
-
-      # Idempotent: inserts missing categories/services (never overwrites admin price edits),
-      # plus demo bookings/reviews when SEED_DEMO=true.
-      - name: Seed database
-        run: pnpm db:seed
-
-  # ── 3. Deploy ──────────────────────────────────────────────────────────────
+  # ── 2. Deploy ──────────────────────────────────────────────────────────────
   deploy:
-    name: "3. Deploy to Vercel (${{ inputs.environment }})"
-    needs: migrate
+    name: "2. Deploy to Vercel (${{ inputs.environment }})"
+    needs: lint
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
@@ -96,13 +61,11 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      # Downloads project settings and env vars for the target environment into .vercel/.
+      # Downloads project settings for the target environment into .vercel/.
       - name: Pull Vercel environment (${{ inputs.environment }})
         run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
 
-      # Builds locally in CI so the exact tested artifact is what gets deployed.
-      # Cached catalog pages are prerendered from the (already migrated) database,
-      # so DATABASE_URL must be set in the Vercel environment pulled above.
+      # Builds in CI so the exact tested artifact is what gets deployed. No env vars needed.
       - name: Build Next.js app for Vercel
         run: vercel build ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
 
@@ -130,24 +93,3 @@ jobs:
             const existing = comments.find((c) => c.body?.includes(marker));
             if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
             else await github.rest.issues.createComment({ owner, repo, issue_number, body });
-
-  # ── 4. Rollback (on failure only) ──────────────────────────────────────────
-  rollback:
-    name: "4. Roll back database on failure (${{ inputs.environment }})"
-    needs: [migrate, deploy]
-    # Runs only if something failed AND this run actually applied migrations.
-    if: ${{ failure() && needs.migrate.outputs.applied != '' && needs.migrate.outputs.applied != '0' }}
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    env:
-      DIRECT_URL: ${{ secrets.DIRECT_URL }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js, pnpm and dependencies
-        uses: ./.github/actions/setup
-
-      # Runs drizzle/down/<tag>.down.sql for each migration this run applied, newest first, in one transaction.
-      - name: Revert ${{ needs.migrate.outputs.applied }} migration(s) applied by this run
-        run: pnpm db:rollback --steps ${{ needs.migrate.outputs.applied }}

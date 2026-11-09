@@ -1,28 +1,12 @@
-# Manual rollback: optionally revert the Vercel production deployment, then
-# roll back N database migrations. Run from Actions → Rollback → Run workflow.
+# Manual rollback: point the Vercel production domain back at the previous deployment.
+# Run from Actions → Rollback → Run workflow.
 name: Rollback
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: Target environment
-        type: choice
-        options: [preview, production]
-        required: true
-      steps:
-        description: Number of migrations to roll back (0 = app only)
-        type: number
-        default: 1
-        required: true
-      app_rollback:
-        description: Also roll back the Vercel production deployment to the previous one
-        type: boolean
-        default: false
 
-# Shares the pipeline's concurrency group so it never races a running migration.
 concurrency:
-  group: ${{ inputs.environment == 'production' && 'production' || 'preview-db' }}
+  group: production
   cancel-in-progress: false
 
 permissions:
@@ -30,27 +14,16 @@ permissions:
 
 jobs:
   rollback:
-    name: "Roll back ${{ inputs.environment }}"
+    name: Roll back production
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: production
     env:
-      DIRECT_URL: ${{ secrets.DIRECT_URL }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v5
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
 
-      - name: Set up Node.js, pnpm and dependencies
-        uses: ./.github/actions/setup
-
-      # App first: old code tolerates the newer schema better than new code tolerates the older one.
+      # Instantly re-aliases production to the previous deployment (no rebuild).
       - name: Roll back Vercel production deployment to previous
-        if: ${{ inputs.app_rollback && inputs.environment == 'production' }}
-        run: |
-          npm install --global vercel@latest
-          vercel rollback --yes --token=${{ secrets.VERCEL_TOKEN }}
-
-      # Runs drizzle/down/<tag>.down.sql for the last N applied migrations, newest first, in one transaction.
-      - name: Revert last ${{ inputs.steps }} database migration(s)
-        run: pnpm db:rollback --steps ${{ inputs.steps }}
+        run: vercel rollback --yes --token=${{ secrets.VERCEL_TOKEN }}
