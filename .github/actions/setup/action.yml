@@ -1,12 +1,20 @@
-name: Setup
-description: Install Node (from .nvmrc), pnpm (from packageManager) and dependencies
+name: Setup project
+description: Install pnpm and Node (from .nvmrc) with the pnpm store cached, then install dependencies
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v4
-    - uses: actions/setup-node@v5
+    # Reads the pnpm version from package.json "packageManager".
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+
+    # Reads the Node version from .nvmrc and restores the pnpm store cache.
+    - name: Set up Node.js
+      uses: actions/setup-node@v5
       with:
         node-version-file: .nvmrc
         cache: pnpm
-    - run: pnpm install --frozen-lockfile
+
+    # Fails if pnpm-lock.yaml is out of sync with package.json.
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
       shell: bash

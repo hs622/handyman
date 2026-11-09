@@ -1,9 +1,12 @@
+# Production: every push to main is linted, migrated + seeded against the
+# production Supabase project, and deployed to the Vercel production domain.
 name: Production
 
 on:
   push:
     branches: [main]
 
+# One production run at a time; a queued run waits instead of cancelling a migration.
 concurrency:
   group: production
   cancel-in-progress: false
@@ -15,6 +18,7 @@ permissions:
 
 jobs:
   pipeline:
+    name: Production
     uses: ./.github/workflows/_pipeline.yml
     with:
       environment: production

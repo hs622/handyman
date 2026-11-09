@@ -1,4 +1,9 @@
-# Reusable pipeline: lint → migrate → seed → deploy, with automatic DB rollback on failure.
+# Reusable CI/CD pipeline, called by preview.yml (PRs) and production.yml (main).
+#
+#   1. Lint        – code quality gate; nothing touches the DB if this fails
+#   2. Migrate     – apply pending Drizzle migrations, then seed
+#   3. Deploy      – build and ship to Vercel (preview or production)
+#   4. Rollback    – only on failure: undo the migrations this run applied
 name: Pipeline
 
 on:
@@ -14,20 +19,37 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
+  # ── 1. Lint ────────────────────────────────────────────────────────────────
   lint:
-    name: Lint & typecheck
+    name: "1. Lint & typecheck"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup
-      - run: pnpm lint
-      - run: pnpm format:check
-      - run: pnpm typecheck
-      - name: Every migration has a down file
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js, pnpm and dependencies
+        uses: ./.github/actions/setup
+
+      # Next.js + TypeScript ESLint rules.
+      - name: Lint code (ESLint)
+        run: pnpm lint
+
+      # Fails if any file isn't formatted; run `pnpm format` locally to fix.
+      - name: Check formatting (Prettier)
+        run: pnpm format:check
+
+      # Generates Next route types (PageProps, LayoutProps, next/root-params) — they live in
+      # the gitignored .next/types — then checks types across app, scripts and config.
+      - name: Type-check (next typegen + tsc --noEmit)
+        run: pnpm typecheck
+
+      # Guarantees the rollback job can always undo a migration.
+      - name: Verify every migration has a down file
         run: pnpm db:check-down
 
+  # ── 2. Migrate & seed ──────────────────────────────────────────────────────
   migrate:
-    name: Migrate & seed (${{ inputs.environment }})
+    name: "2. Migrate & seed database (${{ inputs.environment }})"
     needs: lint
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -35,37 +57,65 @@ jobs:
       applied: ${{ steps.migrate.outputs.applied }}
     env:
       DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      # Set the GitHub environment variable SEED_DEMO=true on "preview" only,
+      # so preview-db gets demo bookings/reviews and production gets the catalog only.
+      SEED_DEMO: ${{ vars.SEED_DEMO }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup
-      - name: Run migrations
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js, pnpm and dependencies
+        uses: ./.github/actions/setup
+
+      # Applies pending migrations from drizzle/ and records how many were
+      # applied (output "applied"), so a later failure rolls back exactly those.
+      - name: Apply database migrations (Drizzle)
         id: migrate
         run: pnpm db:migrate
-      - name: Seed
+
+      # Idempotent: inserts missing categories/services (never overwrites admin price edits),
+      # plus demo bookings/reviews when SEED_DEMO=true.
+      - name: Seed database
         run: pnpm db:seed
 
+  # ── 3. Deploy ──────────────────────────────────────────────────────────────
   deploy:
-    name: Deploy to Vercel (${{ inputs.environment }})
+    name: "3. Deploy to Vercel (${{ inputs.environment }})"
     needs: migrate
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
       url: ${{ steps.deploy.outputs.url }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup
-      - run: npm install --global vercel@latest
-      - name: Pull Vercel project settings
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js, pnpm and dependencies
+        uses: ./.github/actions/setup
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      # Downloads project settings and env vars for the target environment into .vercel/.
+      - name: Pull Vercel environment (${{ inputs.environment }})
         run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Build
+
+      # Builds locally in CI so the exact tested artifact is what gets deployed.
+      # Cached catalog pages are prerendered from the (already migrated) database,
+      # so DATABASE_URL must be set in the Vercel environment pulled above.
+      - name: Build Next.js app for Vercel
         run: vercel build ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Deploy
+
+      # Uploads the prebuilt output; production deploys are promoted to the live domain.
+      - name: Deploy prebuilt output to Vercel
         id: deploy
         run: |
           url=$(vercel deploy --prebuilt ${{ inputs.environment == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed: $url" >> "$GITHUB_STEP_SUMMARY"
-      - name: Comment preview URL on PR
+
+      # Creates or updates a single sticky comment with the latest preview URL.
+      - name: Post preview URL to pull request
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v8
         env:
@@ -81,8 +131,9 @@ jobs:
             if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
             else await github.rest.issues.createComment({ owner, repo, issue_number, body });
 
+  # ── 4. Rollback (on failure only) ──────────────────────────────────────────
   rollback:
-    name: Roll back DB (${{ inputs.environment }})
+    name: "4. Roll back database on failure (${{ inputs.environment }})"
     needs: [migrate, deploy]
     # Runs only if something failed AND this run actually applied migrations.
     if: ${{ failure() && needs.migrate.outputs.applied != '' && needs.migrate.outputs.applied != '0' }}
@@ -91,7 +142,12 @@ jobs:
     env:
       DIRECT_URL: ${{ secrets.DIRECT_URL }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup
-      - name: Roll back ${{ needs.migrate.outputs.applied }} migration(s)
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js, pnpm and dependencies
+        uses: ./.github/actions/setup
+
+      # Runs drizzle/down/<tag>.down.sql for each migration this run applied, newest first, in one transaction.
+      - name: Revert ${{ needs.migrate.outputs.applied }} migration(s) applied by this run
         run: pnpm db:rollback --steps ${{ needs.migrate.outputs.applied }}

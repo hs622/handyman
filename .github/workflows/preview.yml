@@ -1,3 +1,5 @@
+# Preview: every PR to main is linted, migrated + seeded against the shared
+# Supabase preview-db, and deployed to a Vercel preview URL.
 name: Preview
 
 on:
@@ -16,6 +18,7 @@ permissions:
 
 jobs:
   pipeline:
+    name: Preview
     uses: ./.github/workflows/_pipeline.yml
     with:
       environment: preview
