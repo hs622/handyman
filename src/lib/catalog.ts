@@ -61,11 +61,15 @@ const reviewList = reviewData
       serviceName: service?.name ?? null,
       serviceNameFr: service?.nameFr ?? null,
       device: r.device,
+      sample: r.sample === true,
     };
   })
   .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
 export const getPublishedReviews = (limit = 50) => reviewList.slice(0, limit);
+
+/** True while every review on the site is placeholder content. */
+export const onlySampleReviews = () => reviewList.length > 0 && reviewList.every((r) => r.sample);
 
 export function getReviewSummary() {
   const count = reviewList.length;

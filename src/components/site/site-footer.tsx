@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Clock, Mail, MapPin, Phone, Wrench } from "lucide-react";
+import { Clock, Mail, MapPin, MessageCircle, Phone, Wrench } from "lucide-react";
 import { site } from "@/config/site";
 import { localePath } from "@/i18n/config";
 import { fill } from "@/i18n/fill";
 import { getDictionary } from "@/i18n/server";
+import { whatsappHref } from "@/lib/contact";
 import { taxLabel } from "@/lib/format";
 
 export async function SiteFooter() {
@@ -62,6 +63,17 @@ export async function SiteFooter() {
               <Phone className="mt-0.5 size-4 shrink-0" />
               <a href={site.phoneHref} className="hover:text-foreground">
                 {site.phone}
+              </a>
+            </li>
+            <li className="flex gap-2">
+              <MessageCircle className="mt-0.5 size-4 shrink-0" />
+              <a
+                href={whatsappHref(dict.common.whatsappMessage)}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-foreground"
+              >
+                {dict.common.whatsapp}
               </a>
             </li>
             <li className="flex gap-2">

@@ -21,11 +21,19 @@ import { HeroCarousel } from "@/components/site/hero-carousel";
 import { ReviewCard } from "@/components/site/review-card";
 import { SectionHeading } from "@/components/site/section-heading";
 import { ServiceCard } from "@/components/site/service-card";
+import { WhatsAppButton } from "@/components/site/whatsapp-button";
 import { site } from "@/config/site";
 import { localePath, localeTag, pick } from "@/i18n/config";
 import { fill } from "@/i18n/fill";
 import { getDictionary } from "@/i18n/server";
-import { getActiveServices, getCategories, getPublishedReviews, getReviewSummary } from "@/lib/catalog";
+import {
+  getActiveServices,
+  getCategories,
+  getPublishedReviews,
+  getReviewSummary,
+  onlySampleReviews,
+} from "@/lib/catalog";
+import { whatsappHref } from "@/lib/contact";
 import { taxLabel } from "@/lib/format";
 
 const STEP_ICONS = [Phone, Store, ClipboardCheck, PackageCheck];
@@ -36,7 +44,8 @@ export default async function HomePage() {
   const services = getActiveServices();
   const summary = getReviewSummary();
   const reviews = getPublishedReviews(3);
-  const hasReviews = summary.count > 0;
+  // Placeholder reviews are shown (labelled) but never counted as a real average rating.
+  const hasReviews = summary.count > 0 && !onlySampleReviews();
 
   const popular = [...services].sort((a, b) => a.priceFromCents - b.priceFromCents).slice(0, 6);
   const average = summary.average.toLocaleString(localeTag[lang], {
@@ -44,7 +53,11 @@ export default async function HomePage() {
     maximumFractionDigits: 1,
   });
   const tax = taxLabel(lang, dict.common.taxName);
-  const slideHrefs = [site.phoneHref, localePath(lang, "/services?category=phones"), site.smsHref];
+  const slideHrefs = [
+    site.phoneHref,
+    localePath(lang, "/services?category=phones"),
+    whatsappHref(dict.common.whatsappMessage),
+  ];
   const h = dict.home;
   const tileClass =
     "flex flex-col items-center gap-2 rounded-2xl border border-transparent p-3 text-center text-sm font-medium transition hover:border-border hover:bg-muted";
@@ -202,6 +215,7 @@ export default async function HomePage() {
           <SectionHeading
             eyebrow={h.reviews.eyebrow}
             title={h.reviews.title}
+            description={onlySampleReviews() ? dict.reviews.sampleNote : undefined}
             action={
               <Button asChild variant="outline" className="h-10 rounded-full px-4">
                 <Link href={localePath(lang, "/reviews")}>
@@ -253,6 +267,11 @@ export default async function HomePage() {
               <Phone /> {site.phone}
             </a>
           </Button>
+          <WhatsAppButton
+            label={dict.common.whatsapp}
+            message={dict.common.whatsappMessage}
+            className="h-12 px-6 text-base font-semibold"
+          />
           <Button
             asChild
             variant="outline"

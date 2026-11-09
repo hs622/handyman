@@ -8,6 +8,8 @@ export const site = {
   phone: "(416) 555-0100",
   phoneHref: "tel:+14165550100",
   smsHref: "sms:+14165550100",
+  /** WhatsApp number in international format, digits only (used for wa.me links). */
+  whatsappNumber: "14165550100",
   email: "hello@example.com",
   address: "123 Queen St W, Toronto, ON M5H 2M9",
   mapHref: "https://maps.google.com/?q=123+Queen+St+W+Toronto+ON",

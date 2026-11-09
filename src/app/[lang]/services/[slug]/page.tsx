@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/components/site/category-icon";
 import { HelpBox } from "@/components/site/help-box";
 import { ServiceCard } from "@/components/site/service-card";
+import { WhatsAppButton } from "@/components/site/whatsapp-button";
 import { site } from "@/config/site";
 import { localePath, pick } from "@/i18n/config";
 import { fill } from "@/i18n/fill";
@@ -123,6 +124,11 @@ async function ServiceDetail({ params }: Pick<PageProps<"/[lang]/services/[slug]
                   <Phone /> {dict.common.callToBook}
                 </a>
               </Button>
+              <WhatsAppButton
+                label={dict.common.whatsapp}
+                message={fill(dict.common.whatsappServiceMessage, { service: pick(service, "name", lang) })}
+                className="h-11 w-full"
+              />
               <Button asChild variant="outline" className="h-11 w-full rounded-full">
                 <a href={site.smsHref}>
                   <MessageSquare /> {dict.common.textUs}

@@ -16,6 +16,9 @@ const fr: Dictionary = {
     allServices: "Tous les services",
     callUs: "Appeler",
     textUs: "Texto",
+    whatsapp: "WhatsApp",
+    whatsappMessage: "Bonjour! J'aimerais réserver une réparation.",
+    whatsappServiceMessage: "Bonjour! J'aimerais réserver : {service}.",
     getDirections: "Itinéraire",
     language: "Langue",
     toggleTheme: "Basculer le mode sombre",
@@ -38,7 +41,7 @@ const fr: Dictionary = {
   },
   help: {
     title: "Besoin d'aide?",
-    text: "Vous ne savez pas ce qui ne va pas? Écrivez-nous ou appelez-nous — on vous guide.",
+    text: "Vous ne savez pas ce qui ne va pas? Écrivez-nous sur WhatsApp, par texto ou appelez-nous — on vous guide.",
   },
   home: {
     slides: [
@@ -57,8 +60,8 @@ const fr: Dictionary = {
       {
         eyebrow: "Des questions?",
         title: "Vous ne savez pas ce qui cloche? Écrivez-nous.",
-        text: "Envoyez une photo ou décrivez le problème — on vous répond avec une estimation.",
-        cta: "Écrivez-nous",
+        text: "Envoyez une photo ou décrivez le problème sur WhatsApp — on vous répond avec une estimation.",
+        cta: "Écrire sur WhatsApp",
       },
     ],
     carousel: {
@@ -177,7 +180,7 @@ const fr: Dictionary = {
     finalPrice: "Prix final confirmé après un diagnostic gratuit. Pas réparé, pas de frais.",
     more: "Autres réparations — {category}",
   },
-  review: { repair: "Réparation" },
+  review: { repair: "Réparation", sample: "Avis d'exemple" },
   reviews: {
     metaTitle: "Avis clients",
     metaDescription: "Ce que nos clients disent de nos réparations.",
@@ -188,6 +191,11 @@ const fr: Dictionary = {
     noneTitle: "Aucun avis pour l'instant",
     noneText: "Les avis de nos clients apparaîtront ici bientôt.",
     outOf: "{rating} sur 5 étoiles",
+    statsTitle: "La boutique en chiffres",
+    ratingTitle: "Note des clients",
+    freeValue: "Gratuit",
+    cta: "Des questions avant de passer?",
+    sampleNote: "Ces avis sont des exemples affichés à titre indicatif.",
   },
 };
 

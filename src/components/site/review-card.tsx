@@ -13,6 +13,7 @@ export type ReviewCardData = {
   serviceName: string | null;
   serviceNameFr: string | null;
   device: string;
+  sample?: boolean;
 };
 
 export function ReviewCard({
@@ -29,7 +30,14 @@ export function ReviewCard({
     : dict.review.repair;
   return (
     <figure className="flex h-full flex-col rounded-2xl border bg-card p-5 shadow-xs">
-      <Stars rating={review.rating} label={fill(dict.reviews.outOf, { rating: review.rating })} />
+      <div className="flex items-center justify-between gap-2">
+        <Stars rating={review.rating} label={fill(dict.reviews.outOf, { rating: review.rating })} />
+        {review.sample && (
+          <span className="rounded-full border border-dashed px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+            {dict.review.sample}
+          </span>
+        )}
+      </div>
       <blockquote className="mt-3 flex-1 text-sm leading-relaxed">
         {lang === "fr" ? `« ${review.body} »` : `“${review.body}”`}
       </blockquote>

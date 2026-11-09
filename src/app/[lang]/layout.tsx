@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { ThemeScript } from "@/components/theme-script";
 import { site } from "@/config/site";
 import { localeTag, locales } from "@/i18n/config";
 import { alternates } from "@/i18n/metadata";
@@ -33,13 +32,13 @@ export default async function SiteRootLayout({ children }: LayoutProps<"/[lang]"
   const { lang } = await getDictionary();
   return (
     <html lang={localeTag[lang]} suppressHydrationWarning className={`${fontClasses} h-full antialiased`}>
+      <head>
+        <ThemeScript />
+      </head>
       <body className="flex min-h-full flex-col">
-        <ThemeProvider>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-          <Toaster richColors position="top-center" />
-        </ThemeProvider>
+        <SiteHeader />
+        <main className="flex-1">{children}</main>
+        <SiteFooter />
       </body>
     </html>
   );

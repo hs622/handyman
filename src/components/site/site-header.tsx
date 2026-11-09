@@ -10,6 +10,7 @@ import { LanguageSwitcher, LanguageSwitcherFallback } from "./language-switcher"
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks, StaticNavLinks, type NavItem } from "./nav-links";
 import { ThemeToggle } from "./theme-toggle";
+import { WhatsAppButton } from "./whatsapp-button";
 
 function SearchForm({
   action,
@@ -66,6 +67,11 @@ export async function SiteHeader() {
             openLabel={dict.common.openMenu}
           >
             {/* On phones the language switch lives in the menu to keep the header row narrow. */}
+            <WhatsAppButton
+              label={dict.common.whatsapp}
+              message={dict.common.whatsappMessage}
+              className="h-11 w-full"
+            />
             <LanguageSwitcher current={lang} className="self-start border" />
           </MobileMenu>
         </Suspense>

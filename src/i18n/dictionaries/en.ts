@@ -18,6 +18,9 @@ const en = {
     allServices: "All services",
     callUs: "Call",
     textUs: "Text us",
+    whatsapp: "WhatsApp",
+    whatsappMessage: "Hi! I'd like to book a repair.",
+    whatsappServiceMessage: "Hi! I'd like to book: {service}.",
     getDirections: "Get directions",
     language: "Language",
     toggleTheme: "Toggle dark mode",
@@ -40,7 +43,7 @@ const en = {
   },
   help: {
     title: "Need help?",
-    text: "Not sure what's wrong? Text or call us — we'll guide you.",
+    text: "Not sure what's wrong? Message us on WhatsApp, text or call — we'll guide you.",
   },
   home: {
     slides: [
@@ -59,8 +62,8 @@ const en = {
       {
         eyebrow: "Questions?",
         title: "Not sure what's wrong? Text us.",
-        text: "Send a photo or describe the problem — we'll reply with an estimate.",
-        cta: "Text us",
+        text: "Send a photo or describe the problem on WhatsApp — we'll reply with an estimate.",
+        cta: "Message us on WhatsApp",
       },
     ],
     carousel: {
@@ -178,7 +181,7 @@ const en = {
     finalPrice: "Final price confirmed after a free diagnosis. No fix, no fee.",
     more: "More {category} repairs",
   },
-  review: { repair: "Repair" },
+  review: { repair: "Repair", sample: "Sample review" },
   reviews: {
     metaTitle: "Customer reviews",
     metaDescription: "What customers say about our repairs.",
@@ -189,6 +192,11 @@ const en = {
     noneTitle: "No reviews yet",
     noneText: "Reviews from our customers will appear here soon.",
     outOf: "{rating} out of 5 stars",
+    statsTitle: "The shop in numbers",
+    ratingTitle: "Customer rating",
+    freeValue: "Free",
+    cta: "Questions before you visit?",
+    sampleNote: "These are sample reviews shown as placeholders.",
   },
 };
 
