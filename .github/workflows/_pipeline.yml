@@ -38,8 +38,9 @@ jobs:
       - name: Check formatting (Prettier)
         run: pnpm format:check
 
-      # Type errors across app, scripts and config.
-      - name: Type-check (tsc --noEmit)
+      # Generates Next route types (PageProps, LayoutProps, next/root-params) — they live in
+      # the gitignored .next/types — then checks types across app, scripts and config.
+      - name: Type-check (next typegen + tsc --noEmit)
         run: pnpm typecheck
 
       # Guarantees the rollback job can always undo a migration.
