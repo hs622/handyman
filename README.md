@@ -1,4 +1,4 @@
-# Handyman Tech Repair (static site)
+# Fixora Concept (static site)
 
 Bilingual (English / French) website for a walk-in tech repair shop in **Toronto, Ontario**: service catalog with upfront prices, customer reviews, FAQ and call/text-to-book.
 

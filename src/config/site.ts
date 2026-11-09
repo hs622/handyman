@@ -3,8 +3,8 @@
  * Placeholder contact details (555-01xx numbers are reserved for fiction) — replace before going live.
  */
 export const site = {
-  name: "Handyman Tech Repair",
-  shortName: "Handyman",
+  name: "Fixora Concept",
+  shortName: "Fixora",
   phone: "(416) 555-0100",
   phoneHref: "tel:+14165550100",
   smsHref: "sms:+14165550100",
