@@ -15,7 +15,8 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:rollback": "tsx scripts/rollback.ts",
     "db:check-down": "tsx scripts/check-down.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "icons": "tsx scripts/generate-icons.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -47,6 +48,7 @@
     "eslint-config-next": "16.4.5",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.10",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5"
