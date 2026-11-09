@@ -1,9 +1,9 @@
-# Preview: every PR to main is linted and deployed to a Vercel preview URL.
+# Preview: every PR into static-site is linted and deployed to a Vercel preview URL.
 name: Preview
 
 on:
   pull_request:
-    branches: [main]
+    branches: [static-site]
 
 # One run per PR; a new push cancels the outdated preview build.
 concurrency:

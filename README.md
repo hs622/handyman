@@ -39,13 +39,15 @@ Next.js 16 (App Router, Cache Components) · shadcn/ui · Tailwind CSS v4 · Ver
 
 ## Pipeline
 
-| Trigger           | Workflow                           | Vercel target                                   |
-| ----------------- | ---------------------------------- | ----------------------------------------------- |
-| PR → `main`       | `preview.yml` → `_pipeline.yml`    | Preview (URL posted on the PR)                  |
-| Push to `main`    | `production.yml` → `_pipeline.yml` | Production                                      |
-| Manual (dispatch) | `rollback.yml`                     | Re-points production to the previous deployment |
+The static site deploys from the **`static-site`** branch; it is intentionally not merged into `main`.
 
-`_pipeline.yml` runs **1. Lint & typecheck** (ESLint, Prettier, `next typegen` + `tsc`) and then **2. Deploy** (`vercel pull` → `vercel build` → `vercel deploy --prebuilt`, with `--prod` on `main`). Vercel's own Git auto-deploys are turned off in `vercel.ts`, so GitHub Actions is the only deploy path.
+| Trigger                                   | Workflow                           | Vercel target                                   |
+| ----------------------------------------- | ---------------------------------- | ----------------------------------------------- |
+| PR → `static-site`                        | `preview.yml` → `_pipeline.yml`    | Preview (URL posted on the PR)                  |
+| Push to `static-site` (or _Run workflow_) | `production.yml` → `_pipeline.yml` | Production                                      |
+| Manual (dispatch)                         | `rollback.yml`                     | Re-points production to the previous deployment |
+
+`_pipeline.yml` runs **1. Lint & typecheck** (ESLint, Prettier, `next typegen` + `tsc`) and then **2. Deploy** (`vercel pull` → `vercel build` → `vercel deploy --prebuilt`, with `--prod` for production). Vercel's own Git auto-deploys are turned off in `vercel.ts`, so GitHub Actions is the only deploy path.
 
 ### One-time setup
 

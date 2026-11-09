@@ -1,9 +1,11 @@
-# Production: every push to main is linted and deployed to the Vercel production domain.
+# Production: every push to static-site is linted and deployed to the Vercel production domain.
+# The static site ships from its own branch (it is not merged into main); "Run workflow" redeploys by hand.
 name: Production
 
 on:
   push:
-    branches: [main]
+    branches: [static-site]
+  workflow_dispatch:
 
 # One production deploy at a time; a queued run waits for the current one.
 concurrency:
