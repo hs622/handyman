@@ -4,6 +4,7 @@ import { site } from "@/config/site";
 import { localePath } from "@/i18n/config";
 import { fill } from "@/i18n/fill";
 import { getDictionary } from "@/i18n/server";
+import { BrandName } from "./brand-name";
 import { whatsappHref } from "@/lib/contact";
 import { taxLabel } from "@/lib/format";
 
@@ -22,7 +23,7 @@ export async function SiteFooter() {
             <span className="inline-flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <Wrench className="size-5" />
             </span>
-            {site.name}
+            <BrandName />
           </Link>
           <p className="mt-3 text-sm text-muted-foreground">{dict.meta.description}</p>
         </div>

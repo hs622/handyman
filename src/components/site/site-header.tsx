@@ -9,6 +9,7 @@ import { getDictionary } from "@/i18n/server";
 import { LanguageSwitcher, LanguageSwitcherFallback } from "./language-switcher";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks, StaticNavLinks, type NavItem } from "./nav-links";
+import { BrandName } from "./brand-name";
 import { ThemeToggle } from "./theme-toggle";
 import { WhatsAppButton } from "./whatsapp-button";
 
@@ -79,8 +80,7 @@ export async function SiteHeader() {
           <span className="inline-flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Wrench className="size-5" />
           </span>
-          <span className="hidden xl:inline">{site.name}</span>
-          <span className="xl:hidden">{site.shortName}</span>
+          <BrandName suffixClassName="hidden sm:inline" />
         </Link>
         <Suspense
           fallback={<StaticNavLinks items={items} className="ml-2 hidden items-center gap-1 md:flex" />}

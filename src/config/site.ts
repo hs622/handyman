@@ -4,7 +4,8 @@
  */
 export const site = {
   name: "Fixora Concept",
-  shortName: "Fixora",
+  /** Logo lockup: `main` is bold, `suffix` is shown smaller and lighter (see <BrandName />). */
+  brand: { main: "Fixora", suffix: "Concept" },
   phone: "(416) 555-0100",
   phoneHref: "tel:+14165550100",
   smsHref: "sms:+14165550100",

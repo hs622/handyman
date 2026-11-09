@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReviewCard } from "@/components/site/review-card";
+import { BrandName } from "@/components/site/brand-name";
 import { Stars } from "@/components/site/stars";
 import { WhatsAppButton } from "@/components/site/whatsapp-button";
 import { site } from "@/config/site";
@@ -67,7 +68,9 @@ export default async function ReviewsPage() {
             <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25">
               <Wrench className="size-6" />
             </span>
-            <p className="mt-4 text-lg font-bold">{site.name}</p>
+            <p className="mt-4 text-lg">
+              <BrandName suffixClassName="opacity-75" />
+            </p>
             <p className="mt-1 text-sm text-primary-foreground/80">{dict.meta.tagline}</p>
           </div>
 
